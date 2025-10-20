@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulador de Propostas SCC SBT - TV & Digital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <!-- Google Analytics 4 (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-309943616"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-309943616');
+    </script>
+
+    <style>
+        :root {
+            --primary-color: #007bff; /* Azul SBT */
+            --secondary-color: #6c757d;
+            --background-color: #f8f9fa;
+            --text-color: #343a40;
+            --card-bg: #ffffff;
+            --header-bg: #ffffff;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --danger-color: #dc3545;
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .btn-cta { background-color: var(--primary-color); color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; transition: background-color .3s, transform .2s; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2); }
+        .btn-cta:hover { background-color: #0056b3; transform: translateY(-2px); }
+        .btn-cta:disabled { background-color: #9eadba; cursor: not-allowed; box-shadow: none; }
+        .hero { text-align: center; padding: 80px 20px 60px; background: #fff; }
+        .hero .badge { background-color: var(--primary-color); color: #fff; padding: 8px 20px; border-radius: 50px; font-size: .9rem; font-weight: 600; display: inline-block; }
+        .hero h1 { font-family: 'Work Sans', sans-serif; font-size: 2.5rem; font-weight: 800; margin: 20px 0 10px; color: var(--text-color); line-height: 1.2; }
+        .hero p { font-size: 1.1rem; margin-bottom: 30px; max-width: 700px; margin-left: auto; margin-right: auto; color: var(--secondary-color); }
+        .hero .cta-buttons { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 40px; }
+        .section { padding: 60px 0; }
+        .section-title { text-align: center; margin-bottom: 50px; }
+        .section-title h2 { font-family: 'Work Sans', sans-serif; font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-color); }
+        .section-title p { max-width: 700px; margin: 0 auto; color: var(--secondary-color); font-size: 1.1rem; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .feature-card { background-color: var(--card-bg); padding: 30px; border-radius: 10px; box-shadow: 0 4px 25px rgba(0,0,0,.08); text-align: center; color: var(--text-color); transition: transform 0.3s, box-shadow 0.3s; }
+        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 8px 30px rgba(0,0,0,.12); }
+        .feature-card .icon { width: 64px; height: 64px; display: block; margin: 0 auto 15px; object-fit: contain; }
+        .feature-card h3 { font-size: 1.4rem; margin-top: 15px; margin-bottom: 10px; font-weight: bold; }
+        .simulator { background-color: #fff; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,.1); padding: 20px; }
+        .simulator-form { max-width: 800px; margin: 0 auto; color: var(--text-color); }
+        .simulator-step { margin-bottom: 30px; background: var(--background-color); padding: 20px; border-radius: 8px; border: 1px solid #dee2e6;}
+        .simulator-step h4 { font-size: 1.5rem; font-weight: 700; margin-top: 0; margin-bottom: 20px; color: var(--primary-color); border-bottom: 2px solid #007bff30; padding-bottom: 10px; }
+        .simulator-step textarea, .simulator-step input, .simulator-step select { width: 100%; padding: 15px; font-family: 'Nunito', sans-serif; font-size: 1rem; border-radius: 8px; border: 1px solid #dee2e6; resize: vertical; transition: border-color 0.3s, box-shadow 0.3s; }
+        .simulator-step textarea:focus, .simulator-step input:focus, .simulator-step select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); outline: none; }
+        .input-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .date-fields { display: flex; flex-direction: column; gap: 20px; }
+        #proposal-result, #email-result-card { margin-top: 40px; padding: 30px; border-radius: 10px; background-color: var(--card-bg); border: 1px solid #dee2e6; display: none; box-shadow: 0 4px 20px rgba(0,0,0,.07); }
+        #proposal-result h3 { color: var(--success-color); }
+        #email-result-content h3 { color: var(--primary-color); }
+        .proposal-actions { margin-top: 20px; display: flex; flex-direction: column; gap: 15px; align-items: center; }
+        .btn-secondary { background-color: var(--secondary-color); box-shadow: 0 4px 15px rgba(108, 117, 125, 0.2); }
+        .btn-secondary:hover { background-color: #5a6268; }
+        .btn-reopen { background-color: var(--success-color); box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2); }
+        .btn-email { background-color: var(--info-color); box-shadow: 0 4px 15px rgba(23, 162, 184, 0.2); }
+        .spinner { border: 4px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; width: 18px; height: 18px; animation: spin 1s ease-in-out infinite; margin-left: 10px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .footer { text-align: center; padding: 40px 20px; background-color: var(--primary-color); color: #fff; margin-top: 60px; }
+        #lead-score-result { display: none; margin-top: 20px; padding: 15px; border-radius: 8px; color: #333; }
+        #lead-score-result.hot { background-color: #ffdddd; border-left: 5px solid #dc3545; }
+        #lead-score-result.warm { background-color: #fff3cd; border-left: 5px solid #ffc107; }
+        #lead-score-result.cold { background-color: #d4edda; border-left: 5px solid #28a745; }
+        #recording-status { display: none; margin-left: 10px; color: var(--danger-color); font-weight: bold; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        .btn-record.recording { background-color: var(--danger-color); }
+        
+        /* Mobile Friendliness */
+        @media (min-width: 600px) {
+            .hero { padding: 100px 20px 80px; }
+            .hero h1 { font-size: 3.2rem; }
+            .hero p { font-size: 1.2rem; }
+            .hero .cta-buttons { flex-direction: row; justify-content: center; }
+            .section-title h2 { font-size: 2.8rem; }
+            .simulator { padding: 40px; }
+            .simulator-step { padding: 30px; }
+            .input-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+            .date-fields { flex-direction: row; }
+            .proposal-actions { flex-direction: row; }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Hero Section -->
+    <header class="hero" id="home">
+        <div class="container">
+            <span class="badge">SIMULADOR DE PROPOSTAS SCC SBT</span>
+            <h1>Crie a Proposta Perfeita em Segundos com IA</h1>
+            <p>Aumente sua conversão com pacotes personalizados de TV e Digital, utilizando dados atualizados do nosso mídia kit.</p>
+            <div class="cta-buttons">
+                <a href="#simulador" class="btn-cta">Simular Proposta</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Funcionalidades -->
+    <section class="section" id="funcionalidades">
+        <div class="container section-title">
+            <h2>Como Funciona</h2>
+        </div>
+        <div class="container">
+            <div class="grid-container">
+                <div class="feature-card">
+                    <img class="icon" src="https://i.postimg.cc/9MjgYcf4/step-1.png" alt="Ícone de formulário">
+                    <h3>1. Descreva a Campanha</h3>
+                    <p>Informe os detalhes da campanha, o produto, público-alvo e o briefing do seu cliente.</p>
+                </div>
+                <div class="feature-card">
+                    <img class="icon" src="https://i.postimg.cc/tZXT4vm4/generative.png" alt="Ícone de Inteligência Artificial">
+                    <h3>2. Análise com IA</h3>
+                    <p>Nossa IA analisa os dados, cria 2 propostas estratégicas e ainda te dá um score de quão "quente" é o lead.</p>
+                </div>
+                <div class="feature-card">
+                    <img class="icon" src="https://i.postimg.cc/6TpqsSvH/pdf-file.png" alt="Ícone de documento PDF">
+                    <h3>3. Proposta e Ação</h3>
+                    <p>Receba a proposta e use a IA para gerar o e-mail de follow-up para o cliente com apenas um clique.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Simulador -->
+    <section class="simulator section" id="simulador">
+        <div class="container">
+            <div class="section-title">
+                <h2>Simulador de Propostas SCC SBT</h2>
+                <p>Preencha os campos abaixo. Quanto mais detalhes, mais inteligente será a sugestão da IA.</p>
+            </div>
+            <div class="simulator-form">
+                
+                <div class="simulator-step">
+                    <h4>1. Dados do Cliente (Para Geração de Lead)</h4>
+                    <div class="input-grid">
+                        <input type="text" id="company-name" placeholder="Nome da Empresa *" required>
+                        <input type="text" id="client-name" placeholder="Seu Nome *" required>
+                        <input type="email" id="client-email" placeholder="Seu E-mail *" required>
+                        <input type="tel" id="client-phone" placeholder="Seu Telefone *" required>
+                    </div>
+                </div>
+
+                <div class="simulator-step">
+                    <h4>2. Detalhes da Campanha</h4>
+                    <div class="input-grid">
+                        <select id="media-type" required>
+                            <option value="" disabled selected>Tipo de Mídia *</option>
+                            <option value="Cross Mídia">Cross Mídia (TV + Digital)</option>
+                            <option value="TV">Apenas TV</option>
+                            <option value="Digital">Apenas Digital</option>
+                        </select>
+                        <input type="number" id="budget" placeholder="Orçamento Estimado (Ex: 15000) *">
+                        <input type="text" id="company-product" placeholder="Produto/Serviço da Empresa *">
+                        <input type="text" id="target-audience" placeholder="Público-alvo (Ex: Jovens 18-25 anos) *">
+                    </div>
+                    <div class="date-fields" style="margin-top: 20px;">
+                        <div>
+                            <label for="campaign-start-date">Início da Campanha *</label>
+                            <input type="date" id="campaign-start-date" required>
+                        </div>
+                        <div>
+                            <label for="campaign-end-date">Fim da Campanha *</label>
+                            <input type="date" id="campaign-end-date" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="simulator-step">
+                    <h4>3. Briefing do Cliente (por Texto ou Áudio)</h4>
+                    <textarea id="briefing-input" rows="8" placeholder="Descreva aqui os objetivos da campanha, mensagens-chave, diferenciais do produto e qualquer outra informação relevante. Ou use o botão abaixo para gravar."></textarea>
+                    <button id="record-briefing-btn" class="btn-cta btn-secondary btn-record" style="width:100%; margin-top: 15px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic-fill" viewBox="0 0 16 16" style="margin-right: 8px;">
+                          <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/>
+                          <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
+                        </svg>
+                        <span id="record-btn-text">Gravar Briefing por Áudio</span>
+                        <span id="recording-status">🔴</span>
+                    </button>
+                </div>
+                
+                <button id="generate-proposal-btn" class="btn-cta" style="width:100%;padding:15px;font-size:1.2rem;margin-top:20px;">Analisar e Gerar Proposta</button>
+                
+                <div id="proposal-result">
+                    <div id="proposal-result-message"></div>
+                    <div id="lead-score-result"></div>
+                    <div class="proposal-actions">
+                         <a id="reopen-proposal-link" class="btn-cta btn-reopen" target="_blank">Reabrir Proposta</a>
+                         <button id="generate-email-btn" class="btn-cta btn-email">Redigir E-mail de Follow-up ✨</button>
+                         <button onclick="resetSimulator()" class="btn-cta btn-secondary">Gerar Nova Proposta</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ✨ Ferramenta Bônus: Redator de E-mail ✨ -->
+    <section class="section" id="email-generator-section" style="background: #d4edda;">
+        <div class="container">
+             <div id="email-result-card">
+                <h3 style="text-align:center; color: var(--primary-color);">Rascunho do E-mail de Follow-up ✨</h3>
+                <div id="email-result-content" style="background: #fff; padding: 20px; border-radius: 8px; white-space: pre-wrap; font-family: monospace;"></div>
+                <button id="copy-email-btn" class="btn-cta" style="width:100%; margin-top: 20px;">Copiar Texto do E-mail</button>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Grupo SCC SBT. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- INÍCIO DA CONFIGURAÇÃO ---
+        const apiKey = ""; 
+        // --- FIM DA CONFIGURAÇÃO ---
+
+        // Elementos do DOM - Proposta
+        const generateBtn = document.getElementById('generate-proposal-btn');
+        const resultDiv = document.getElementById('proposal-result');
+        const proposalResultMessageDiv = document.getElementById('proposal-result-message');
+        const reopenLink = document.getElementById('reopen-proposal-link');
+        const leadScoreDiv = document.getElementById('lead-score-result');
+
+        // Elementos do DOM - Gerador de E-mail
+        const generateEmailBtn = document.getElementById('generate-email-btn');
+        const emailResultCard = document.getElementById('email-result-card');
+        const emailResultContent = document.getElementById('email-result-content');
+        const copyEmailBtn = document.getElementById('copy-email-btn');
+        
+        // Elementos do DOM - Gravação de Áudio
+        const recordBtn = document.getElementById('record-briefing-btn');
+        const recordBtnText = document.getElementById('record-btn-text');
+        const recordingStatus = document.getElementById('recording-status');
+        
+        // Variável para armazenar a proposta gerada
+        let lastProposalHTML = '';
+
+        // --- LÓGICA DE GRAVAÇÃO DE ÁUDIO ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
+        let isRecording = false;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false; // Alterado para false para capturas mais precisas
+            recognition.lang = 'pt-BR';
+            recognition.interimResults = false; // Alterado para false
+
+            recognition.onstart = () => {
+                isRecording = true;
+                recordBtnText.textContent = 'Gravando... Clique para parar';
+                recordingStatus.style.display = 'inline';
+                recordBtn.classList.add('recording');
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                briefingInput.value += transcript + ' '; // Adiciona o texto transcrito ao final
+            };
+
+            recognition.onend = () => {
+                isRecording = false;
+                recordBtnText.textContent = 'Gravar Briefing por Áudio';
+                recordingStatus.style.display = 'none';
+                recordBtn.classList.remove('recording');
+            };
+            
+            recognition.onerror = (event) => {
+                console.error("Erro no reconhecimento de voz:", event.error);
+                alert("Ocorreu um erro na gravação. Verifique a permissão do microfone e tente novamente.");
+                isRecording = false;
+                recordBtnText.textContent = 'Gravar Briefing por Áudio';
+                recordingStatus.style.display = 'none';
+                recordBtn.classList.remove('recording');
+            }
+
+        } else {
+            recordBtn.disabled = true;
+            recordBtnText.textContent = 'Gravação não suportada neste navegador';
+        }
+
+        recordBtn.addEventListener('click', () => {
+            if (!SpeechRecognition) return;
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        });
+
+
+        // Event Listeners
+        generateBtn.addEventListener('click', generateProposal);
+        generateEmailBtn.addEventListener('click', generateFollowUpEmail);
+        copyEmailBtn.addEventListener('click', copyEmailToClipboard);
+
+
+        // Inputs do formulário
+        const companyNameInput = document.getElementById('company-name');
+        const clientNameInput = document.getElementById('client-name');
+        const clientEmailInput = document.getElementById('client-email');
+        const clientPhoneInput = document.getElementById('client-phone');
+        const mediaTypeInput = document.getElementById('media-type');
+        const budgetInput = document.getElementById('budget');
+        const productInput = document.getElementById('company-product');
+        const audienceInput = document.getElementById('target-audience');
+        const campaignStartDateInput = document.getElementById('campaign-start-date');
+        const campaignEndDateInput = document.getElementById('campaign-end-date');
+        const briefingInput = document.getElementById('briefing-input');
+        
+        async function callGeminiAPI(prompt, buttonElement) {
+            const originalButtonText = buttonElement.innerHTML;
+            buttonElement.innerHTML = 'Analisando... <div class="spinner"></div>';
+            buttonElement.disabled = true;
+
+            try {
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                const payload = { 
+                    contents: [{ parts: [{ text: prompt }] }],
+                    safetySettings: [
+                        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
+                    ]
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const responseText = await response.text();
+                if (!responseText) {
+                    throw new Error("A API retornou uma resposta vazia. Isso pode indicar um problema ou um bloqueio de conteúdo pela política de segurança.");
+                }
+
+                const data = JSON.parse(responseText);
+
+                if (!response.ok) {
+                    console.error("Erro da API:", data);
+                    throw new Error(`Erro na comunicação com a API: ${response.status} ${response.statusText}.`);
+                }
+
+                if (data.candidates && data.candidates.length > 0 && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts.length > 0) {
+                    return data.candidates[0].content.parts[0].text;
+                } else {
+                    console.error("Resposta da API inválida ou bloqueada:", data);
+                    let errorMessage = "A IA não conseguiu gerar uma resposta. Isso pode ocorrer por políticas de segurança da plataforma.";
+                    if (data.promptFeedback && data.promptFeedback.blockReason) {
+                        errorMessage += ` (Motivo do Bloqueio: ${data.promptFeedback.blockReason})`;
+                    }
+                    throw new Error(errorMessage);
+                }
+            } catch (error) {
+                console.error("Erro na função callGeminiAPI:", error);
+                throw error;
+            }
+            finally {
+                buttonElement.innerHTML = originalButtonText;
+                buttonElement.disabled = false;
+            }
+        }
+        
+        async function generateProposal() {
+            const requiredFields = [companyNameInput, clientNameInput, clientEmailInput, clientPhoneInput, mediaTypeInput, budgetInput, productInput, audienceInput, campaignStartDateInput, campaignEndDateInput, briefingInput];
+            for (const field of requiredFields) {
+                if (!field.value.trim() && field.id !== 'briefing-input') { // Briefing é opcional
+                    alert(`Por favor, preencha o campo "${field.placeholder || 'Campo obrigatório'}".`);
+                    field.focus();
+                    return;
+                }
+            }
+
+            const companyName = companyNameInput.value.trim();
+            const mediaType = mediaTypeInput.value;
+            const budget = budgetInput.value;
+            const product = productInput.value.trim();
+            const audience = audienceInput.value.trim();
+            const startDate = new Date(campaignStartDateInput.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'});
+            const endDate = new Date(campaignEndDateInput.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'});
+            const briefing = briefingInput.value.trim();
+
+            if(typeof gtag === 'function') {
+                gtag('event', 'generate_proposal', { 'event_category': 'engagement', 'event_label': companyName, 'value': budget });
+            }
+
+            resultDiv.style.display = 'none';
+            leadScoreDiv.style.display = 'none';
+
+            const proposalPrompt = `
+                Você é o Agente de IA Especialista em Vendas de Mídia do Grupo SCC SBT. Sua missão é criar uma DEFESA ESTRATÉGICA DE VENDAS com duas propostas distintas e persuasivas (Essencial e Estratégica de Upsell), usando os dados do cliente e a programação e preços mais recentes (Base: Outubro 2025), sempre aplicando os descontos máximos.
+
+                **FONTE DA VERDADE - PROGRAMAÇÃO E PREÇOS (Base: Outubro 2025 - Valores com Desconto Máximo para 30s):**
+
+                **1. GRADE LOCAL (SEG-SEX):**
+                * 'Primeiro Impacto SC': R$ 1.668
+                * 'SCC Meio-Dia': R$ 4.854 (ALTA AUDIÊNCIA, PICO DO MEIO-DIA)
+                * 'Jornal do Meio-Dia': R$ 1.470
+                * 'A Tarde é Nossa': R$ 3.305 (ALTA AUDIÊNCIA, PÚBLICO FEMININO)
+                * 'Tá Na Hora SC': R$ 3.801
+                * 'SBT News': R$ 1.470
+                * 'SCC Esporte': R$ 1.470 (PÚBLICO MASCULINO E ESPORTES)
+                * 'SBT Brasil': R$ 5.023
+                * 'A Infância de Romeu e Julieta': R$ 6.319 (PÚBLICO FAMÍLIA E JOVENS)
+
+                **2. GRADE NACIONAL (FIM DE SEMANA - ALTO IMPACTO):**
+                * 'SBT Sports' (Sáb): R$ 1.470
+                * 'Circo do Tiru' (Sáb): R$ 6.848
+                * 'Sabadou com Virginia' (Sáb): R$ 9.188
+                * 'Domingo Legal': R$ 12.203 (LÍDER DE AUDIÊNCIA)
+                * 'Programa Silvio Santos': R$ 12.601 (TRADIÇÃO E GRANDE PÚBLICO)
+
+                **3. MÍDIA DIGITAL (Portal SCC10):**
+                * 'PBLI 1 (R$ 2.500)': 1 matéria, 2 posts, 100.000 impressões.
+                * 'PBLI 2 (R$ 5.000)': 2 matérias, 4 posts, 250.000 impressões.
+                * 'PBLI 3 (R$ 9.000)': 3 matérias, 1 vídeo, 6 posts, 450.000 impressões.
+                * 'Canal Branded (CBRA - R$ 21.000)': Projeto especial de conteúdo e mídia.
+
+                **REGRAS DE NEGÓCIO ESTRATÉGICAS:**
+                1.  **REGRA MESTRA: RESPEITE O TIPO DE MÍDIA:**
+                    * Se 'Tipo de Mídia Solicitado' for 'TV', suas 2 propostas DEVEM conter APENAS opções de TV.
+                    * Se 'Tipo de Mídia Solicitado' for 'Digital', suas 2 propostas DEVEM conter APENAS opções de Digital.
+                    * Se 'Tipo de Mídia Solicitado' for 'Cross Mídia', combine ambas de forma estratégica nas 2 propostas.
+                2.  **CRIE 2 PROPOSTAS DISTINTAS:** Você DEVE estruturar sua resposta com as seguintes 2 propostas:
+                    * **Proposta 1: Essencial e Direcionada:** Foco nos formatos convencionais e programas de maior audiência para garantir cobertura, respeitando o orçamento do cliente.
+                    * **Proposta 2: Estratégica de Upsell:** Adicione valor à proposta 1 com maior frequência, patrocínios, ou uma combinação cross-mídia mais robusta para resultados superiores.
+                3.  **ESTRUTURA DETALHADA (OBRIGATÓRIA):** Para CADA uma das 2 propostas, use a seguinte estrutura HTML:
+                    * '<h2>[NOME DA PROPOSTA]</h2>' (Ex: '<h2>Proposta 1: Impacto Essencial</h2>')
+                    * '<h3>Objetivo da Estratégia</h3>'
+                    * '<h3>Formatos e Canais Envolvidos</h3>' (Use '<ul>' e '<li>' para detalhar)
+                    * '<h3>Justificativa Estratégica</h3>' (Explique PORQUÊ essa combinação é ideal)
+                    * '<h3>Investimento Total Estimado</h3>'
+                4.  **PULVERIZAÇÃO DA GRADE:** Ao montar o plano de TV, diversifique os programas e horários para atingir diferentes perfis de público.
+                5.  **DESCONTOS:** Todos os valores de TV informados JÁ SÃO os de pacote/negociado. Use-os diretamente.
+
+                **DADOS DO CLIENTE PARA ANÁLISE:**
+                * Empresa: ${companyName}
+                * Produto/Serviço: ${product}
+                * Público-alvo: ${audience}
+                * Tipo de Mídia Solicitado: ${mediaType}
+                * Orçamento Estimado: R$ ${budget}
+                * Briefing Detalhado: "${briefing}"
+            `;
+            
+            const leadScorePrompt = `
+                Aja como um diretor de vendas experiente. Analise os seguintes dados de um lead e forneça um "Score" e uma breve justificativa.
+                - Orçamento: R$ ${budget}
+                - Produto: ${product}
+                - Público-alvo: ${audience}
+                - Briefing: "${briefing}"
+                - Tipo de Mídia: ${mediaType}
+                
+                Responda APENAS com um objeto JSON com as chaves "score" (pode ser "Quente", "Morno" ou "Frio") e "justificativa".
+            `;
+
+            try {
+                // Executar chamadas em sequência para maior estabilidade
+                const proposalResponse = await callGeminiAPI(proposalPrompt, generateBtn);
+                const leadScoreResponse = await callGeminiAPI(leadScorePrompt, generateBtn);
+
+                // Processar e armazenar a proposta
+                lastProposalHTML = proposalResponse.replace(/```html/g, '').replace(/```/g, '');
+                
+                // Abrir proposta na nova aba
+                openProposalInNewWindow();
+
+                // Exibir mensagem de sucesso na página principal
+                proposalResultMessageDiv.innerHTML = `<h3>Proposta para ${companyName} gerada com sucesso!</h3><p>A sua defesa estratégica foi aberta em uma nova aba. Caso seu navegador tenha bloqueado, utilize o botão "Reabrir Proposta".</p>`;
+                
+                // Processar e exibir o score do lead
+                try {
+                    const cleanedResponse = leadScoreResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+                    if(cleanedResponse) {
+                        const leadData = JSON.parse(cleanedResponse);
+                        leadScoreDiv.innerHTML = `<strong>Score do Lead:</strong> ${leadData.score}<br><small><strong>Justificativa (Análise Interna):</strong> ${leadData.justificativa}</small>`;
+                        leadScoreDiv.className = ''; // Limpa classes antigas
+                        if (leadData.score === 'Quente') leadScoreDiv.classList.add('hot');
+                        else if (leadData.score === 'Morno') leadScoreDiv.classList.add('warm');
+                        else leadScoreDiv.classList.add('cold');
+                        leadScoreDiv.style.display = 'block';
+                    }
+                } catch(e) {
+                    console.error("Erro ao processar o JSON do score do lead:", e);
+                    leadScoreDiv.style.display = 'none';
+                }
+
+                resultDiv.style.display = 'block';
+                resultDiv.scrollIntoView({ behavior: 'smooth' });
+
+                 if(typeof gtag === 'function') {
+                    gtag('event', 'proposal_success', { 'event_category': 'engagement', 'event_label': companyName });
+                }
+            } catch (error) {
+                proposalResultMessageDiv.innerHTML = `<p style="color: red; font-weight: bold;">Ocorreu um erro ao gerar a proposta: ${error.message}</p>`;
+                resultDiv.style.display = 'block';
+                console.error(error);
+                if(typeof gtag === 'function') {
+                    gtag('event', 'proposal_error', { 'event_category': 'error', 'event_label': error.message });
+                }
+            }
+        }
+        
+        async function generateFollowUpEmail() {
+            if (!lastProposalHTML) {
+                alert("Por favor, gere uma proposta primeiro antes de criar o e-mail.");
+                return;
+            }
+
+            const prompt = `
+                Aja como um vendedor consultivo do Grupo SCC SBT. Use o nome do cliente e o resumo da proposta para criar um rascunho de e-mail de follow-up.
+                
+                **Nome do Cliente (para o vocativo):** ${clientNameInput.value.trim().split(' ')[0] || 'Prezado(a)'}
+                **Resumo da Proposta (use este HTML para extrair os pontos principais):** ${lastProposalHTML}
+
+                **Instruções para o E-mail:**
+                - Comece com um tom amigável e agradeça a oportunidade.
+                - Mencione brevemente as duas opções estratégicas que foram preparadas (Essencial e Estratégica).
+                - Reforce o principal benefício da parceria (Ex: conectar a marca ao seu público-alvo de forma impactante).
+                - Termine com uma chamada para ação clara, sugerindo uma breve reunião para discutir os detalhes.
+                - Mantenha o e-mail curto, profissional e direto.
+                - **NÃO use formatação HTML na sua resposta.** Apenas texto puro.
+            `;
+
+            try {
+                const emailText = await callGeminiAPI(prompt, generateEmailBtn);
+                emailResultContent.textContent = emailText;
+                emailResultCard.style.display = 'block';
+                emailResultCard.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                emailResultContent.textContent = `Ocorreu um erro ao gerar o e-mail: ${error.message}`;
+                emailResultCard.style.display = 'block';
+            }
+        }
+
+        function copyEmailToClipboard() {
+            const emailText = emailResultContent.textContent;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(emailText).then(() => {
+                    alert("Texto do e-mail copiado para a área de transferência!");
+                }).catch(err => {
+                    alert("Falha ao copiar o texto.");
+                    console.error('Erro ao copiar: ', err);
+                });
+            } else {
+                // Fallback para navegadores mais antigos
+                const textArea = document.createElement("textarea");
+                textArea.value = emailText;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert("Texto do e-mail copiado para a área de transferência!");
+                } catch (err) {
+                    alert("Falha ao copiar o texto.");
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+
+        function openProposalInNewWindow() {
+            if (!lastProposalHTML) {
+                console.error("Tentativa de abrir proposta sem conteúdo.");
+                return;
+            }
+            
+            const companyName = companyNameInput.value.trim() || "Cliente";
+            const proposalWindow = window.open('', '_blank');
+            
+            if (!proposalWindow) {
+                alert("Seu navegador bloqueou a abertura da nova aba. Por favor, habilite os pop-ups para este site.");
+                return;
+            }
+
+            const htmlContent = `
+                <html>
+                    <head>
+                        <title>Proposta Comercial Estratégica para ${companyName} - SCC SBT</title>
+                        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Work+Sans:wght@700&display=swap" rel="stylesheet">
+                        <style>
+                            body { font-family: 'Nunito', sans-serif; margin: 0; padding: 1rem; color: #343a40; background-color: #f4f4f9; }
+                            .container { max-width: 850px; margin: 0 auto; background-color: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+                            .header { text-align: center; border-bottom: 2px solid #007bff; padding-bottom: 1.5rem; margin-bottom: 2.5rem; }
+                            .logo { max-width: 150px; margin-bottom: 1rem; }
+                            h1, h2, h3, h4 { color: #007bff; font-family: 'Work Sans', sans-serif; }
+                            h1 { font-size: 2rem; }
+                            h2 { font-size: 1.6rem; border-top: 1px solid #eee; padding-top: 2rem; margin-top: 2.5rem; }
+                            h3 { font-size: 1.3rem; border-bottom: 2px solid #007bff30; padding-bottom: 0.5rem; }
+                            ul { list-style-type: none; padding-left: 0; }
+                            li { background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid #007bff; }
+                            p { line-height: 1.6; }
+                            .print-button { display: block; width: 220px; margin: 3rem auto 1rem; padding: 1rem; background-color: #007bff; color: #fff; text-align: center; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; transition: background-color 0.3s; }
+                            .print-button:hover { background-color: #0056b3; }
+                            @media (min-width: 600px) {
+                                body { padding: 2.5rem; }
+                                .container { padding: 3rem; }
+                                h1 { font-size: 2.2rem; }
+                                h2 { font-size: 1.8rem; }
+                                h3 { font-size: 1.4rem; }
+                            }
+                            @media print { 
+                                body { padding: 0; background-color: #fff; }
+                                .container { box-shadow: none; border-radius: 0; padding: 1rem; }
+                                .print-button { display: none; } 
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <div class="header">
+                                <img src="https://scc.com.br/wp-content/uploads/2023/08/logo-scc-sbt.svg" alt="Logo SCC SBT" class="logo">
+                                <h1>Proposta Comercial Estratégica</h1>
+                                <p style="font-size: 1.2rem;">Para: <strong>${companyName}</strong></p>
+                            </div>
+                            ${lastProposalHTML}
+                            <button class="print-button" onclick="window.print()">Imprimir / Salvar como PDF</button>
+                        </div>
+                    </body>
+                </html>
+            `;
+            
+            proposalWindow.document.write(htmlContent);
+            proposalWindow.document.close();
+            
+            const dataUrl = 'data:text/html;charset=UTF-8,' + encodeURIComponent(htmlContent);
+            if(reopenLink) {
+                 reopenLink.href = dataUrl;
+            }
+        }
+
+        window.resetSimulator = function() {
+            const fieldsToReset = [companyNameInput, clientNameInput, clientEmailInput, clientPhoneInput, budgetInput, productInput, audienceInput, campaignStartDateInput, campaignEndDateInput, briefingInput];
+            fieldsToReset.forEach(field => field.value = '');
+            mediaTypeInput.selectedIndex = 0;
+            resultDiv.style.display = 'none';
+            proposalResultMessageDiv.innerHTML = '';
+            emailResultCard.style.display = 'none';
+            emailResultContent.textContent = '';
+            lastProposalHTML = '';
+            window.scrollTo({ top: document.getElementById('simulador').offsetTop, behavior: 'smooth' });
+            return false;
+        }
+    });
+    </script>
+
+</body>
+</html>
+
